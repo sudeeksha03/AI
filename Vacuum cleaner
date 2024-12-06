@@ -1,0 +1,108 @@
+# Function to print the board with borders
+def print_board(board):
+    n = len(board)  # Get the size of the board
+    print("+" + "---+" * n)  # Top border
+   
+    for i, row in enumerate(board):
+        print("|", end=" ")  # Left border for each row
+        print(" | ".join(row), end=" ")  # Print the tiles with space separation
+        print("|")  # Right border for each row
+       
+        if i < n - 1:  # Add horizontal divider after each row except the last one
+            print("+" + "---+" * n)  # Divider between rows
+   
+    print("+" + "---+" * n)  # Bottom border
+    print()  # Add an extra line after the board for readability
+
+# Function to simulate the vacuum cleaner cleaning
+def clean_vacuum(board, dirty_tiles, start_pos):
+    cleaned = 0
+    total_dirty = len(dirty_tiles)
+    x, y = start_pos  # Starting position of the vacuum cleaner
+    visited = set()  # Track visited tiles
+    visited.add(start_pos)  # Mark the starting position as visited
+
+    # While there are dirty tiles left, clean them
+    while cleaned < total_dirty:
+        print(f"Vacuum cleaner is at ({x}, {y})")
+
+        # If the current tile is dirty, clean it
+        if board[x][y] == "D":
+            board[x][y] = "C"  # Cleaned tile
+            dirty_tiles.remove((x, y))  # Remove the cleaned tile from the list
+            cleaned += 1
+            print(f"Cleaning tile ({x}, {y})")
+            print_board(board)
+
+        # Find all valid adjacent tiles (up, down, left, right) that haven't been visited
+        possible_moves = [
+            (x-1, y, "up"),  # Move up
+            (x+1, y, "down"),  # Move down
+            (x, y-1, "left"),  # Move left
+            (x, y+1, "right")   # Move right
+        ]
+
+        # Filter out moves that are out of bounds or have already been visited
+        valid_moves = [
+            (nx, ny, direction) for nx, ny, direction in possible_moves
+            if 0 <= nx < len(board) and 0 <= ny < len(board[0]) and (nx, ny) not in visited
+        ]
+
+        # If there are no valid moves left (i.e., the cleaner is stuck), stop cleaning
+        if not valid_moves:
+            print("No more valid moves left!")
+            break
+
+        # Move to a random valid adjacent tile
+        x, y, direction = random.choice(valid_moves)
+        visited.add((x, y))  # Mark the new position as visited
+
+        # Print the direction of the move
+        print(f"Moving {direction} to ({x}, {y})")
+
+# Function to initialize the board with dirty tiles
+def initialize_board(n, dirty_count):
+    board = [["C" for _ in range(n)] for _ in range(n)]  # Initialize board with all cleaned
+    dirty_tiles = []
+
+    # Randomly place dirty tiles
+    while len(dirty_tiles) < dirty_count:
+        i = random.randint(0, n - 1)
+        j = random.randint(0, n - 1)
+        if (i, j) not in dirty_tiles:  # Avoid duplicates
+            dirty_tiles.append((i, j))
+            board[i][j] = "D"  # Mark the tile as dirty
+
+    return board, dirty_tiles
+
+def main():
+    # User input for board size and number of dirty tiles
+    n = int(input("Enter the board size (n x n): "))
+    dirty_count = int(input("Enter the number of dirty tiles: "))
+
+    if dirty_count > n * n:
+        print("Error: Dirty tiles cannot exceed total number of tiles on the board!")
+        return
+
+    # User input for vacuum cleaner starting position
+    start_x = int(input(f"Enter the starting row (0 to {n-1}): "))
+    start_y = int(input(f"Enter the starting column (0 to {n-1}): "))
+
+    if not (0 <= start_x < n and 0 <= start_y < n):
+        print("Invalid starting position!")
+        return
+
+    # Initialize the board
+    board, dirty_tiles = initialize_board(n, dirty_count)
+
+    print("\nInitial Board:")
+    print_board(board)
+
+    # Start the vacuum cleaner simulation
+    print("Vacuum cleaner starts cleaning...\n")
+    clean_vacuum(board, dirty_tiles, (start_x, start_y))
+
+    print("All tiles are cleaned!")
+
+if __name__ == "__main__":
+    main()
