@@ -1,64 +1,70 @@
-def print_board(board):
-    """Function to print the Tic-Tac-Toe board."""
-    print("\n")
-    for row in board:
-        print(" | ".join(row))
-        print("-" * 5)
+# Tic Tac Toe Game in Python with proper borders
 
-def check_win(board, player):
-    """Check if the given player has won."""
-    # Check rows, columns, and diagonals for a win
+def print_board(board):
+    # Print the Tic-Tac-Toe board with a border
+    print("-------------")
     for i in range(3):
-        if all([cell == player for cell in board[i]]):  # Check row
+        print("|", board[i][0], "|", board[i][1], "|", board[i][2], "|")
+        print("-------------")
+
+def check_winner(board, player):
+    # Check horizontal, vertical, and diagonal for a winner
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] == player:
             return True
-        if all([board[j][i] == player for j in range(3)]):  # Check column
+        if board[0][i] == board[1][i] == board[2][i] == player:
             return True
-    if board[0][0] == player and board[1][1] == player and board[2][2] == player:  # Check diagonal
+    if board[0][0] == board[1][1] == board[2][2] == player:
         return True
-    if board[0][2] == player and board[1][1] == player and board[2][0] == player:  # Check reverse diagonal
+    if board[0][2] == board[1][1] == board[2][0] == player:
         return True
     return False
 
-def check_draw(board):
-    """Check if the board is full (draw condition)."""
+def is_board_full(board):
+    # Check if the board is full
     for row in board:
         if ' ' in row:
-            return False  # Empty space found, game is not a draw yet
+            return False
     return True
 
-def player_turn(board, player):
-    """Function to handle the player's turn."""
-    while True:
-        try:
-            move = int(input(f"Player {player}, enter your move (1-9): ")) - 1
-            row, col = divmod(move, 3)
-            if board[row][col] == ' ':
-                board[row][col] = player
-                break
-            else:
-                print("The cell is already taken, try again.")
-        except (ValueError, IndexError):
-            print("Invalid input! Please enter a number between 1 and 9.")
+def main():
+    # Initialize the Tic-Tac-Toe board
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    current_player = 'X'
 
-def tic_tac_toe():
-    """Main function to start and play the game."""
-    board = [[' ' for _ in range(3)] for _ in range(3)]  # Create an empty board
-    current_player = 'X'  # Player X always starts the game
+    print("Tic-Tac-Toe Game!")
     print_board(board)
 
     while True:
-        player_turn(board, current_player)
+        # Player input
+        try:
+            row, col = map(int, input(f"Player {current_player}, enter row and column (0-2) separated by space: ").split())
+            if row < 0 or row > 2 or col < 0 or col > 2:
+                print("Invalid position! Please enter numbers between 0 and 2.")
+                continue
+            if board[row][col] != ' ':
+                print("This position is already taken! Try again.")
+                continue
+        except ValueError:
+            print("Invalid input! Please enter two numbers separated by space.")
+            continue
+
+        # Place the player's mark
+        board[row][col] = current_player
         print_board(board)
 
-        if check_win(board, current_player):
+        # Check for a winner
+        if check_winner(board, current_player):
             print(f"Player {current_player} wins!")
             break
-        elif check_draw(board):
-            print("It's a draw!")
+
+        # Check if the board is full
+        if is_board_full(board):
+            print("It's a tie!")
             break
 
-        # Switch to the other player
+        # Switch players
         current_player = 'O' if current_player == 'X' else 'X'
 
 if __name__ == "__main__":
-    tic_tac_toe()
+    main()
