@@ -1,3 +1,5 @@
+import random  # Import the random module
+
 # Function to print the board with borders
 def print_board(board):
     n = len(board)  # Get the size of the board
@@ -106,3 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
